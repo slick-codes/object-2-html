@@ -1,7 +1,7 @@
 // import type { o2hElement } from './types/index.d'
 // check if item is an object
 const isObject = function (value) {
-    return (!Array.isArray(value) && value === null && typeof value === 'object');
+    return (typeof value === 'object' && value !== null && !Array.isArray(value));
 };
 // get key
 const toArrayOfKeys = (object) => Object.keys(object);
@@ -42,13 +42,19 @@ const o2h = {
                     throw new Error(`"${key} event should be a function instead got an ${typeof (object.events[key])}`);
         }
         // handle children element
-        if (object.children)
+        if (object.children) {
+            // convert children to array if it is an object
+            if (isObject(object.children))
+                object.children = [object.children];
+            // render child element using recursion
             for (let childElement of object.children)
-                if (parent) {
-                    // append element to parent if parent exsit
-                    parent.appendChild(element);
-                    return parent; // return parent to dom
-                }
+                this.render(childElement, element);
+        }
+        if (parent) {
+            // append element to parent if parent exsit
+            parent.appendChild(element);
+            return parent; // return parent to dom
+        }
         return element; // return element if parent does not exsit
     },
     undoRender(html) {
