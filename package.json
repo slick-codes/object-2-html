@@ -1,0 +1,15 @@
+{
+  "name": "object-to-html",
+  "version": "1.0.0",
+  "description": "This package allows you convert objects to html and can even revert html to object.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Paul Ezekiel-Hart",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
