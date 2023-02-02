@@ -44,12 +44,15 @@ const o2h: o2h = {
         // Element container 
         let element: HTMLElement | null = document.createElement(object.tag)
 
-        // set attributes
-        if (object.attributes)
+        if (object.attributes) {
+            // convert object attribute to array of object
+            if (isObject(object.attributes)) object.attributes = [object.attributes]
+            // set attribute
             object.attributes.forEach((attribute: HTMLAttribute) => {
                 const key: string = toArrayOfKeys(attribute)[0]
                 element.setAttribute(key, attribute[key])
             })
+        }
 
         // set innerText
         if (object.innerText) element.innerText = object?.innerText
