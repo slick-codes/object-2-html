@@ -17,7 +17,7 @@ interface ObjectToHTML {
 
 // check if item is an object
 const isObject: Function = function (value: any): boolean {
-    return (!Array.isArray(value) && value === null && typeof value === 'object')
+    return (typeof value === 'object' && value !== null && !Array.isArray(value))
 }
 
 // get key
@@ -74,15 +74,18 @@ const o2h: o2h = {
         }
 
         // handle children element
-        if (object.children)
-            for (let childElement of object.children)
+        if (object.children) {
+            // convert children to array if it is an object
+            if (isObject(object.children)) object.children = [object.children]
+            // render child element using recursion
+            for (let childElement of object.children) this.render(childElement, element)
+        }
 
-
-                if (parent) {
-                    // append element to parent if parent exsit
-                    parent.appendChild(element)
-                    return parent // return parent to dom
-                }
+        if (parent) {
+            // append element to parent if parent exsit
+            parent.appendChild(element)
+            return parent // return parent to dom
+        }
         return element // return element if parent does not exsit
     },
     undoRender(html: HTMLElement): HTMLObject {
