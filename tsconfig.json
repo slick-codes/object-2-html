@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "lib": ["DOM", "ES2020"],
+    "target": "es6",
+    "experimentalDecorators": true,
+    "preserveConstEnums": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "moduleResolution": "node",
+    "outDir": "dist/"
+  },
+  "include": ["./src/*"],
+  "exclude": ["node_modules"]
+}
