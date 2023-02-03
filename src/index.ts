@@ -25,7 +25,6 @@ const toArrayOfKeys: Function = (object: Object) => Object.keys(object)
 
 
 interface o2h {
-    parent: HTMLElement | null
     render: Function
     undoRender: Function
 }
@@ -35,14 +34,15 @@ interface HTMLAttribute {
 }
 
 const o2h: o2h = {
-    parent: null,
     render(object: any, parent: HTMLElement | undefined): HTMLElement {
         // check if object is parsed!
         if (!object)
             throw new Error('you need to parse in an object schema!')
 
+        if (!object.tagName)
+            throw new Error('you need to parse in a tagName to HTMLObject')
         // Element container 
-        let element: HTMLElement | null = document.createElement(object.tag)
+        let element: HTMLElement | null = document.createElement(object.tagName)
 
         if (object.attributes) {
             // convert object attribute to array of object
@@ -66,14 +66,14 @@ const o2h: o2h = {
             for (let styleName in object.style) {
                 element.style[styleName] = object.style[styleName]
             }
-
+        // handle events 
         if (object.events) {
             const eventKeys = toArrayOfKeys(object.events)
             for (let key of eventKeys)
                 if (typeof (object.events[key]) === 'function')
                     element.addEventListener(key, object.events[key])
                 else
-                    throw new Error(`"${key} event should be a function instead got an ${typeof (object.events[key])}`)
+                    throw new Error(`"${key}" event should be a function instead got an ${typeof (object.events[key])}`)
         }
 
         // handle children element
@@ -91,8 +91,27 @@ const o2h: o2h = {
         }
         return element // return element if parent does not exsit
     },
-    undoRender(html: HTMLElement): HTMLObject {
-        return {}
+    undoRender(element: HTMLElement): HTMLObject {
+        // check if element is type HTML
+        if (!(element instanceof HTMLElement))
+            throw new Error(`render requires a HTMLElement but got a ${typeof element} instead`)
+
+        // object construct
+        const object: Object = new Object()
+        // @ts-ignore
+        object.tagName = element.tagName.toLowerCase()
+        // extract classes
+        object.classes = element.className.split(' ')
+
+
+        const elementChildren: HTMLElement[] = element.children
+        if (elementChildren) {
+            object.children = []
+            for (let child of elementChildren) {
+                object.children.push(this.undoRender(child))
+            }
+        }
+        return object
     }
 }
 
