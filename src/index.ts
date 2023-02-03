@@ -31,25 +31,41 @@ const getEventList: Function = function (element: HTMLElement) {
     return types
 }
 
+// extract inline css from element
+function getStyles(element: HTMLElement): any {
+
+    const attributes = element.getAttribute('style')
+    if (!attributes) return {}
+
+    let styles: string[] = attributes.split(';')
+    styles.pop() // remove empty array
+
+    const styleObj: any = styles.map((style: any) => {
+        let [rule, value] = style.split(':')
+        rule = rule.split('-').map((value: string, index: number) => {
+            return (index !== 0) ? value[0].toUpperCase() + value.slice(1) : value
+        }).join('')
+
+        return { [rule]: value }
+    })
+
+    return styleObj
+}
 
 // get key
 const toArrayOfKeys: Function = (object: Object) => Object.keys(object)
-
-
 interface o2h {
     render: Function
     undoRender: Function
 }
-
 interface HTMLAttribute {
     [key: string]: string
 }
-
-
 interface HTMLObject {
     tagName?: string;
     innerText?: string;
     innerHTML?: string;
+    styles?: { [key: string]: string | number };
     classes?: string | string[];
     attributes?: HTMLAttribute[];
     events?: { [key: string]: Function }[];
@@ -78,9 +94,11 @@ const o2h: o2h = {
         }
 
         // set innerText
-        if (object.innerText) element.innerText = object?.innerText
+        if (object.innerText && !object.children?.length) // prevent duplication
+            element.innerText = object?.innerText
         // set innerHTML
-        if (object.innerHTML) element.innerHTML = object?.innerHTML
+        if (object.innerHTML && !object.children?.length) // prevent duplication
+            element.innerHTML = object?.innerHTML
         // set classes 
         if (object.classes)
             element.className = typeof object.classes === 'string' ? object.classes : object.classes.join(" ")
@@ -104,7 +122,9 @@ const o2h: o2h = {
             // convert children to array if it is an object
             if (isObject(object.children)) object.children = [object.children]
             // render child element using recursion
-            for (let childElement of object.children) this.render(childElement, element)
+            for (let childElement of object.children) {
+                this.render(childElement, element)
+            }
         }
 
         if (parent) {
@@ -127,8 +147,8 @@ const o2h: o2h = {
         object.classes = element.className.split(' ')
 
         // set innerText 
-        object.innerText = element.innerText
-        object.innerHTML = element.innerHTML
+        if (element.innerText) object.innerText = element.innerText
+        if (element.innerHTML) object.innerHTML = element.innerHTML
 
         // set attributes
         object.attributes = []
@@ -141,8 +161,9 @@ const o2h: o2h = {
         const listeners: Object[] = getEventList(element)
         object.events = []
 
+        // headle styles object
+        object.styles = getStyles(element)
         for (let listener of listeners) {
-            // @ts-ignore
             const key = toArrayOfKeys(listener)[0].slice('2')
             object.events[key] = listener[`on${key}`]
         }
@@ -158,8 +179,6 @@ const o2h: o2h = {
         return object
     }
 }
-
-
 
 //@ts-ignore
 if (typeof exports !== 'undefined') {
