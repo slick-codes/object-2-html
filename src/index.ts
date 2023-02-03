@@ -48,8 +48,10 @@ interface HTMLAttribute {
 
 interface HTMLObject {
     tagName?: string;
+    innerText?: string;
+    innerHTML?: string;
     classes?: string | string[];
-    attributes?: HTMLAttribute | HTMLAttribute[];
+    attributes?: HTMLAttribute[];
     events?: { [key: string]: Function }[];
     children?: HTMLObject[];
 }
@@ -123,6 +125,17 @@ const o2h: o2h = {
         object.tagName = element.tagName.toLowerCase()
         // extract classes
         object.classes = element.className.split(' ')
+
+        // set innerText 
+        object.innerText = element.innerText
+        object.innerHTML = element.innerHTML
+
+        // set attributes
+        object.attributes = []
+        element.getAttributeNames().forEach(attrName => {
+            if (attrName !== 'class')
+                object.attributes.push({ [attrName]: element.getAttribute(attrName) })
+        })
 
         // handle event extraction
         const listeners: Object[] = getEventList(element)
