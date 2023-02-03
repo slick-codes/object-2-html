@@ -15,10 +15,22 @@ interface ObjectToHTML {
     unrender: HTMLObject
 }
 
+
+
 // check if item is an object
 const isObject: Function = function (value: any): boolean {
     return (typeof value === 'object' && value !== null && !Array.isArray(value))
 }
+
+const getEventList: Function = function (element: HTMLElement) {
+    const types = [];
+    for (let event in element) {
+        if (/^on/.test(event) && typeof element[event] === 'function')
+            types.push({ [event]: element[event] })
+    }
+    return types
+}
+
 
 // get key
 const toArrayOfKeys: Function = (object: Object) => Object.keys(object)
@@ -31,6 +43,15 @@ interface o2h {
 
 interface HTMLAttribute {
     [key: string]: string
+}
+
+
+interface HTMLObject {
+    tagName?: string;
+    classes?: string | string[];
+    attributes?: HTMLAttribute | HTMLAttribute[];
+    events?: { [key: string]: Function }[];
+    children?: HTMLObject[];
 }
 
 const o2h: o2h = {
@@ -71,7 +92,7 @@ const o2h: o2h = {
             const eventKeys = toArrayOfKeys(object.events)
             for (let key of eventKeys)
                 if (typeof (object.events[key]) === 'function')
-                    element.addEventListener(key, object.events[key])
+                    element[`on${key}`] = object.events[key]
                 else
                     throw new Error(`"${key}" event should be a function instead got an ${typeof (object.events[key])}`)
         }
@@ -97,20 +118,30 @@ const o2h: o2h = {
             throw new Error(`render requires a HTMLElement but got a ${typeof element} instead`)
 
         // object construct
-        const object: Object = new Object()
-        // @ts-ignore
+        const object: HTMLObject = {}
+
         object.tagName = element.tagName.toLowerCase()
         // extract classes
         object.classes = element.className.split(' ')
 
+        // handle event extraction
+        const listeners: Object[] = getEventList(element)
+        object.events = []
 
-        const elementChildren: HTMLElement[] = element.children
+        for (let listener of listeners) {
+            // @ts-ignore
+            const key = toArrayOfKeys(listener)[0].slice('2')
+            object.events[key] = listener[`on${key}`]
+        }
+
+        const elementChildren: HTMLCollection = element.children
         if (elementChildren) {
             object.children = []
             for (let child of elementChildren) {
                 object.children.push(this.undoRender(child))
             }
         }
+
         return object
     }
 }
