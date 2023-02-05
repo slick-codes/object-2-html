@@ -64,6 +64,7 @@ interface HTMLAttribute {
 interface HTMLObject {
     tagName?: string;
     innerText?: string;
+    type?: "element" | "text" | "comment";
     innerHTML?: string;
     styles?: { [key: string]: string | number };
     classes?: string | string[];
@@ -78,61 +79,76 @@ const o2h: o2h = {
         if (!object)
             throw new Error('you need to parse in an object schema!')
 
-        if (!object.tagName)
-            throw new Error('you need to parse in a tagName to HTMLObject')
-        // Element container 
-        let element: HTMLElement | null = document.createElement(object.tagName)
+        if (!["element", "comment", "text"].includes(object.type))
+            throw new Error('first param requires an object of {type: "element" or "text" or "comment"')
 
-        if (object.attributes) {
+        // Element container 
+        let node: HTMLElement;
+
+        switch (object.type) {
+            case "element":
+                node = document.createElement(object.tagName);
+                break;
+            case "comment":
+                //@ts-ignore
+                node = document.createComment(object.text ?? "")
+                break;
+            case "comment":
+                //@ts-ignore
+                node = document.createTextNode(object.text ?? "")
+        }
+
+        let isText: boolean = object.type.toLowerCase() === 'text'
+        let isElement: boolean = object.type.toLowerCase() === 'element'
+
+        if (object.attributes && isElement) {
             // convert object attribute to array of object
             if (isObject(object.attributes)) object.attributes = [object.attributes]
             // set attribute
             object.attributes.forEach((attribute: HTMLAttribute) => {
                 const key: string = toArrayOfKeys(attribute)[0]
-                element.setAttribute(key, attribute[key])
+                node.setAttribute(key, attribute[key])
             })
         }
 
-        // set innerText
-        if (object.innerText && !object.children?.length) // prevent duplication
-            element.innerText = object?.innerText
-        // set innerHTML
-        if (object.innerHTML && !object.children?.length) // prevent duplication
-            element.innerHTML = object?.innerHTML
+        if (isElement && object.text) {
+            node.appendChild(document.createTextNode(object.text))
+        }
+
         // set classes 
-        if (object.classes)
-            element.className = typeof object.classes === 'string' ? object.classes : object.classes.join(" ")
+        if (object.classes && isElement)
+            node.className = typeof object.classes === 'string' ? object.classes : object.classes.join(" ")
         // Assign style to element
-        if (object.style)
+        if (object.style && isElement)
             for (let styleName in object.style) {
-                element.style[styleName] = object.style[styleName]
+                node.style[styleName] = object.style[styleName]
             }
         // handle events 
         if (object.events) {
             const eventKeys = toArrayOfKeys(object.events)
             for (let key of eventKeys)
                 if (typeof (object.events[key]) === 'function')
-                    element[`on${key}`] = object.events[key]
+                    node[`on${key}`] = object.events[key]
                 else
                     throw new Error(`"${key}" event should be a function instead got an ${typeof (object.events[key])}`)
         }
 
         // handle children element
-        if (object.children) {
+        if (object.childNodes && isElement) {
             // convert children to array if it is an object
-            if (isObject(object.children)) object.children = [object.children]
+            if (isObject(object.childNodes)) object.children = [object.childNodes]
             // render child element using recursion
-            for (let childElement of object.children) {
-                this.render(childElement, element)
+            for (let childElement of object.childNodes) {
+                this.render(childElement, node)
             }
         }
 
         if (parent) {
             // append element to parent if parent exsit
-            parent.appendChild(element)
+            parent.appendChild(node)
             return parent // return parent to dom
         }
-        return element // return element if parent does not exsit
+        return node // return element if parent does not exsit
     },
     undoRender(element: HTMLElement): HTMLObject {
         // check if element is type HTML
@@ -145,10 +161,6 @@ const o2h: o2h = {
         object.tagName = element.tagName.toLowerCase()
         // extract classes
         object.classes = element.className.split(' ')
-
-        // set innerText 
-        if (element.innerText) object.innerText = element.innerText
-        if (element.innerHTML) object.innerHTML = element.innerHTML
 
         // set attributes
         object.attributes = []
@@ -168,7 +180,8 @@ const o2h: o2h = {
             object.events[key] = listener[`on${key}`]
         }
 
-        const elementChildren: HTMLCollection = element.children
+        const elementChildren: NodeListOf<ChildNode> = element.childNodes
+
         if (elementChildren) {
             object.children = []
             for (let child of elementChildren) {
