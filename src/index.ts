@@ -93,7 +93,7 @@ const o2h: o2h = {
                 //@ts-ignore
                 node = document.createComment(object.text ?? "")
                 break;
-            case "comment":
+            case "text":
                 //@ts-ignore
                 node = document.createTextNode(object.text ?? "")
         }
