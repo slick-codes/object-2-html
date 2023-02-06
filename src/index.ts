@@ -63,14 +63,13 @@ interface HTMLAttribute {
 }
 interface HTMLObject {
     tagName?: string;
-    innerText?: string;
     type?: "element" | "text" | "comment";
-    innerHTML?: string;
+    text?: string;
     styles?: { [key: string]: string | number };
     classes?: string | string[];
     attributes?: HTMLAttribute[];
     events?: { [key: string]: Function }[];
-    children?: HTMLObject[];
+    childNodes?: HTMLObject[];
 }
 
 const o2h: o2h = {
@@ -124,7 +123,8 @@ const o2h: o2h = {
                 node.style[styleName] = object.style[styleName]
             }
         // handle events 
-        if (object.events) {
+        if (object.events && isElement) {
+            console.log(object.events)
             const eventKeys = toArrayOfKeys(object.events)
             for (let key of eventKeys)
                 if (typeof (object.events[key]) === 'function')
@@ -151,41 +151,63 @@ const o2h: o2h = {
         return node // return element if parent does not exsit
     },
     undoRender(element: HTMLElement): HTMLObject {
-        // check if element is type HTML
-        if (!(element instanceof HTMLElement))
-            throw new Error(`render requires a HTMLElement but got a ${typeof element} instead`)
+
+        const isText = element instanceof Text
+        const isElement = element instanceof HTMLElement
+        const isComment = element instanceof Comment
+
+        if ((isElement && isComment && isText))
+            throw new Error(`undoRender requires an HTMLElement but got a ${typeof element} instead`)
 
         // object construct
         const object: HTMLObject = {}
 
-        object.tagName = element.tagName.toLowerCase()
+        if (isElement)
+            object.type = 'element'
+        else if (isComment)
+            object.type = 'comment'
+        else if (isText)
+            object.type = 'text'
+
+        if (isText || isComment)
+            object.text = element.nodeValue
+
+        if (isElement)
+            object.tagName = element.tagName.toLowerCase()
         // extract classes
-        object.classes = element.className.split(' ')
+        if (isElement)
+            object.classes = element.className.split(' ')
 
         // set attributes
-        object.attributes = []
-        element.getAttributeNames().forEach(attrName => {
-            if (attrName !== 'class')
-                object.attributes.push({ [attrName]: element.getAttribute(attrName) })
-        })
+        if (isElement)
+            element.getAttributeNames().forEach(attrName => {
+                if (!object.attributes) object.attributes = []
+                if (attrName !== 'class')
+                    object.attributes.push({ [attrName]: element.getAttribute(attrName) })
+            })
 
         // handle event extraction
-        const listeners: Object[] = getEventList(element)
-        object.events = []
+        let listeners: Object[];
+        if (isElement) {
+            listeners = getEventList(element)
+            object.events = []
+        }
 
         // headle styles object
-        object.styles = getStyles(element)
-        for (let listener of listeners) {
-            const key = toArrayOfKeys(listener)[0].slice('2')
-            object.events[key] = listener[`on${key}`]
+        if (isElement) {
+            object.styles = getStyles(element)
+            for (let listener of listeners) {
+                const key = toArrayOfKeys(listener)[0].slice('2')
+                object.events[key] = listener[`on${key}`]
+            }
         }
 
         const elementChildren: NodeListOf<ChildNode> = element.childNodes
 
         if (elementChildren) {
-            object.children = []
+            object.childNodes = []
             for (let child of elementChildren) {
-                object.children.push(this.undoRender(child))
+                object.childNodes.push(this.undoRender(child))
             }
         }
 
