@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "amd",
+    "module": "ESNext",
     "allowJs": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -9,9 +9,9 @@
     "experimentalDecorators": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "outDir": "dist/"
   },
-  "include": ["./src/*"],
+  "include": ["./src/*", "./src/types/index.d.ts"],
   "exclude": ["node_modules"]
 }
