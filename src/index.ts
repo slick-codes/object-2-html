@@ -1,21 +1,3 @@
-// import type { o2hElement } from './types/index.d'
-
-
-// custom HTMLElement type
-// export type o2hElement = HTMLElement
-interface HTMLObject extends Object {
-
-}
-
-// TODO: allow child to inherit the style of parent
-
-
-interface ObjectToHTML {
-    render: HTMLElement
-    unrender: HTMLObject
-}
-
-
 
 // check if item is an object
 const isObject: Function = function (value: any): boolean {
@@ -54,23 +36,7 @@ function getStyles(element: HTMLElement): any {
 
 // get key
 const toArrayOfKeys: Function = (object: Object) => Object.keys(object)
-interface o2h {
-    render: Function
-    undoRender: Function
-}
-interface HTMLAttribute {
-    [key: string]: string
-}
-interface HTMLObject {
-    tagName?: string;
-    type?: "element" | "text" | "comment";
-    text?: string;
-    styles?: { [key: string]: string | number };
-    classes?: string | string[];
-    attributes?: HTMLAttribute[];
-    events?: { [key: string]: Function }[];
-    childNodes?: HTMLObject[];
-}
+
 
 const o2h: o2h = {
     render(object: any, parent: HTMLElement | undefined): HTMLElement {
@@ -78,13 +44,13 @@ const o2h: o2h = {
         if (!object)
             throw new Error('you need to parse in an object schema!')
 
-        if (!["element", "comment", "text"].includes(object.type))
+        if (!["element", "comment", "text"].includes(object.type.toLowerCase()))
             throw new Error('first param requires an object of {type: "element" or "text" or "comment"')
 
         // Element container 
         let node: HTMLElement;
 
-        switch (object.type) {
+        switch (object.type.toLowerCase()) {
             case "element":
                 node = document.createElement(object.tagName);
                 break;
@@ -124,7 +90,6 @@ const o2h: o2h = {
             }
         // handle events 
         if (object.events && isElement) {
-            console.log(object.events)
             const eventKeys = toArrayOfKeys(object.events)
             for (let key of eventKeys)
                 if (typeof (object.events[key]) === 'function')
@@ -216,7 +181,7 @@ const o2h: o2h = {
 }
 
 //@ts-ignore
-if (typeof exports !== 'undefined') {
+if (typeof exports !== 'undefined')
     //@ts-ignore
     exports = o2h
-}
+
