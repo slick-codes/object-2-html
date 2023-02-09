@@ -1,5 +1,5 @@
 {
-  "name": "object-to-html",
+  "name": "object-2-html",
   "version": "1.0.0",
   "description": "This package allows you convert objects to html and can even revert html to object.",
   "main": "dist/index.js",
