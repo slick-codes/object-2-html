@@ -5,12 +5,12 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slick-codes/object-to-html.git"
+    "url": "git+https://github.com/slick-codes/object-2-html.git"
   },
   "bugs": {
-    "url": "https://github.com/slick-codes/object-to-html/issues"
+    "url": "https://github.com/slick-codes/object-2-html/issues"
   },
-  "homepage": "https://github.com/slick-codes/object-to-html#readme",
+  "homepage": "https://github.com/slick-codes/object-2-html#readme",
   "keywords": [
     "html",
     "object to html",
