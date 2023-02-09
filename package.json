@@ -20,8 +20,7 @@
     "html to object"
   ],
   "scripts": {
-    "dev": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc --watch"
   },
   "author": "Paul Ezekiel-Hart",
   "license": "ISC",
