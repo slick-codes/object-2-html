@@ -3,6 +3,22 @@
   "version": "1.0.0",
   "description": "This package allows you convert objects to html and can even revert html to object.",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slick-codes/object-to-html.git"
+  },
+  "bugs": {
+    "url": "https://github.com/slick-codes/object-to-html/issues"
+  },
+  "homepage": "https://github.com/slick-codes/object-to-html#readme",
+  "keywords": [
+    "html",
+    "object to html",
+    "json to html",
+    "schema to html",
+    "nested html",
+    "html to object"
+  ],
   "scripts": {
     "dev": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
