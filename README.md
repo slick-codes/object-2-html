@@ -1,14 +1,14 @@
 
 
 # Installation 
-You can install object-to-html using npm , yarn or pnpm
+You can install object-2-html using npm , yarn or pnpm
 ````bash
-    npm install object-to-html
+    npm install object-2-html
 ````
 
 You can also insert the CDN directly to your project header
 ```html
-    <script src="unpkg.com/object-to-html@^1/dist/index.js"></script>
+    <script src="unpkg.com/object-2-html@^1/dist/index.js"></script>
 ```
 
 #Usage
@@ -16,7 +16,7 @@ You can also insert the CDN directly to your project header
 To reader your object to html you'll need to use the reader method provided with the o2h object.
 
 ```javascript
-    import oth from 'object-to-html'
+    import oth from 'object-2-html'
 
     const obj = {
         type: "element",
@@ -71,7 +71,7 @@ childNode can consite of Text, Element and Comment.
 You can also render text without inserting it as a node.
 
 ```javascript
-    import o2h from 'object-to-html'
+    import o2h from 'object-2-html'
 
     const obj = {
         type: "element",
