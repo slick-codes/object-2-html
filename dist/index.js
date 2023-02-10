@@ -153,6 +153,11 @@ const o2h = {
     }
 };
 //@ts-ignore
-if (typeof exports !== 'undefined')
+if (typeof exports !== 'undefined') {
     //@ts-ignore
-    exports = o2h;
+    exports.default = o2h;
+    //@ts-ignore
+    module.exports = exports.default;
+    //@ts-ignore
+    module.exports.default = exports.default;
+}
