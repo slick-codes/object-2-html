@@ -52,6 +52,9 @@ To reader your object to html you'll need to use the reader method provided with
             }
         ]   
     }
+    // use this to render the generated array to the body element
+    // o2h.render(o2h, document.querySelector('body') )
+
     const html = o2h.render(o2h)
     console.log(html)
 ```
@@ -65,10 +68,16 @@ To reader your object to html you'll need to use the reader method provided with
     <button>Submit form</button>
 </div>
 ```
-the event will be tied to the button element and will be triggered one the button is clicked.
+the event will be tied to the button element and will be triggered once the button is clicked.
+childNode consist of Text, Element and Comment, the rendering sequence is determined by how the nodes are stacked.
 
-childNode can consite of Text, Element and Comment.
-You can also render text without inserting it as a node.
+you can also render the object directly to a parent element.
+
+```javascript
+    o2h.render(obj, document.querySelector('body'))
+```
+
+Whilst text can be rendered as a as a childNode it can also be inserted directly to the element. using the text key.
 
 ```javascript
     import o2h from 'object-2-html'
@@ -76,7 +85,7 @@ You can also render text without inserting it as a node.
     const obj = {
         type: "element",
         tagName: "h1",
-        text: "Hello Word",
+        text: "Hello Word", // render text directly to h1 element
         style: {color: "blue"}
     }
 ```
