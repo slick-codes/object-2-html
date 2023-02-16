@@ -8,7 +8,7 @@ You can install object-2-html using npm , yarn or pnpm
 
 You can also insert the CDN directly to your project header
 ```html
-    <script src="unpkg.com/object-2-html@^1/dist/index.js"></script>
+    <script src="https://unpkg.com/@slickcodes/object-2-html@1.0.0/dist/index.js"></script>
 ```
 
 #Usage
