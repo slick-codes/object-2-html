@@ -39,8 +39,14 @@ const toArrayOfKeys: Function = (object: Object) => Object.keys(object)
 
 
 const o2h: o2h = {
-    render(object: any, parent: HTMLElement | undefined): HTMLElement {
+    /***
+     * @param {HTMLObject} Object_Literal A valid object schema
+     * @param {HTMLElement} HTMLElement an optional HTMl Element where the generated element will be rendered to
+     * @returns {HTMLElement} this returns the generated HTMLElement 
+    */
+    render(obj: HTMLObject, parent: HTMLElement | undefined): HTMLElement {
         // check if object is parsed!
+        let object: any = obj
         if (!object)
             throw new Error('you need to parse in an object schema!')
 
@@ -115,6 +121,10 @@ const o2h: o2h = {
         }
         return node // return element if parent does not exsit
     },
+    /***
+ * @param {HTMLElement} HTMLElement this is a valid HTML parent element
+ * @returns {HTMLObject} this returns the generated HTMLObject 
+*/
     undoRender(element: HTMLElement): HTMLObject {
 
         const isText = element instanceof Text
@@ -181,12 +191,12 @@ const o2h: o2h = {
 }
 
 //@ts-ignore
-if (typeof exports !== 'undefined'){
-//@ts-ignore
-exports.default = o2h;
-//@ts-ignore
-module.exports = exports.default;
-//@ts-ignore
-module.exports.default = exports.default;
+if (typeof exports !== 'undefined') {
+    //@ts-ignore
+    exports.default = o2h;
+    //@ts-ignore
+    module.exports = exports.default;
+    //@ts-ignore
+    module.exports.default = exports.default;
 }
 
