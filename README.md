@@ -53,9 +53,9 @@ To reader your object to html you'll need to use the reader method provided with
         ]   
     }
     // use this to render the generated array to the body element
-    // o2h.render(o2h, document.querySelector('body') )
+    // o2h.render(obj, document.querySelector('body') )
 
-    const html = o2h.render(o2h)
+    const html = oth.render(obj)
     console.log(html)
 ```
 ### Output
